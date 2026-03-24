@@ -1,29 +1,57 @@
 # Mihomo Proxy 一键部署包
 
-## 快速使用
+## 系统要求
 
-### 1. 上传到新服务器
+| 项目 | 要求 |
+|------|------|
+| **操作系统** | Linux (测试于 Ubuntu 20.04/22.04/24.04) |
+| **Shell** | zsh |
+| **架构** | x86_64 (amd64) / aarch64 (arm64) |
+
+### 依赖
+
+安装前请确保系统已安装：
 
 ```bash
-# 打包
-tar -czvf mihomo-deploy.tar.gz mihomo-deploy/
+# Ubuntu/Debian
+sudo apt update
+sudo apt install -y zsh curl jq python3 python3-yaml
 
-# 上传到服务器
-scp mihomo-deploy.tar.gz user@server:~/
+# 切换到 zsh（如尚未使用）
+chsh -s $(which zsh)
 ```
 
-### 2. 在新服务器上安装
+| 依赖 | 用途 |
+|------|------|
+| `zsh` | Shell 环境 |
+| `curl` | API 请求 / 下载 |
+| `jq` | JSON 解析 |
+| `python3` + `pyyaml` | 解析 mihomo 配置文件 |
+
+---
+
+## 快速使用
+
+### 1. 克隆或上传
 
 ```bash
-# 解压
-tar -xzvf mihomo-deploy.tar.gz
+# 方式一：克隆仓库
+git clone https://github.com/Doctorluka/mihomo-deploy.git
 cd mihomo-deploy
 
-# 安装（指定你的配置文件）
+# 方式二：上传压缩包
+tar -xzvf mihomo-deploy.tar.gz
+cd mihomo-deploy
+```
+
+### 2. 安装
+
+```bash
+# 指定你的配置文件
 ./install.sh -c /path/to/your/config.yaml
 ```
 
-### 3. 启动使用
+### 3. 启动
 
 ```bash
 source ~/.zshrc
@@ -99,6 +127,19 @@ mihomo-deploy/
 
 ---
 
+## 安装位置
+
+所有文件安装到用户目录，无 root 权限要求：
+
+| 文件 | 位置 |
+|------|------|
+| mihomo 二进制 | `~/.local/bin/mihomo` |
+| 配置文件 | `~/.config/mihomo/config.yaml` |
+| 函数文件 | `~/.config/zsh/functions/` |
+| 日志 | `~/.mihomo.log` |
+
+---
+
 ## 配置文件要求
 
 你的 mihomo 配置文件需要包含：
@@ -139,4 +180,31 @@ proxy-groups:
 
 ---
 
+## 故障排除
+
+### `command not found: proxy-select`
+
+```bash
+source ~/.zshrc
+```
+
+### `python3: No module named 'yaml'`
+
+```bash
+sudo apt install python3-yaml
+# 或
+pip3 install pyyaml
+```
+
+### 下载 mihomo 失败
+
+手动下载后使用 `-b` 参数：
+```bash
+# 从 https://github.com/MetaCubeX/mihomo/releases 下载
+./install.sh -c config.yaml -b ./mihomo-linux-amd64
+```
+
+---
+
+**Tested on:** Ubuntu 20.04/22.04/24.04
 **Created:** 2026-03-25
