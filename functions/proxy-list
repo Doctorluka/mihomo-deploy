@@ -1,0 +1,40 @@
+#autoload
+source "${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}/mihomo-common.zsh"
+
+proxy-list() {
+    if ! _mihomo_ensure_running; then return 1; fi
+
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "🌍 所有可用节点"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    local countries=($(_mihomo_get_supported_countries | tr ' ' '\n' | sort))
+    for country in "${countries[@]}"; do
+        local nodes_str=$(_mihomo_get_nodes_by_country "$country")
+        local nodes=(${(f)nodes_str})
+        if [[ ${#nodes[@]} -gt 0 ]]; then
+            echo ""
+            local name="${MIHOMO_COUNTRY_NAMES[$country]:-$country}"
+            echo "📍 $name [$country]:"
+            for node in "${nodes[@]}"; do
+                local delay=$(_mihomo_api_get_proxy_delay "$node")
+                if [[ -n "$delay" && "$delay" != "0" ]]; then
+                    printf "   • %-30s 延迟: %3sms\n" "$node" "$delay"
+                else
+                    printf "   • %-30s 延迟: 不可用\n" "$node"
+                fi
+            done
+        fi
+    done
+
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "💡 使用示例"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  proxy-select jp    # 切换到日本节点"
+    echo "  proxy-select hk    # 切换到香港节点"
+    echo "  proxy-select auto  # 切换到自动模式"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
+proxy-list "$@"

@@ -1,0 +1,32 @@
+#autoload
+source "${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}/mihomo-common.zsh"
+
+mihomo-stop() {
+    # 先关闭代理
+    [[ -n "$http_proxy" ]] && proxy-off
+
+    if ! pgrep -u "$USER" -x "mihomo" > /dev/null; then
+        echo "ℹ️  Mihomo 未运行"
+        return 0
+    fi
+
+    echo "🛑 停止 Mihomo..."
+    pkill -u "$USER" -x "mihomo"
+    sleep 1
+
+    if ! pgrep -u "$USER" -x "mihomo" > /dev/null; then
+        echo "✅ Mihomo 已停止"
+    else
+        echo "⚠️  尝试强制停止..."
+        pkill -9 -u "$USER" -x "mihomo"
+        sleep 1
+        if ! pgrep -u "$USER" -x "mihomo" > /dev/null; then
+            echo "✅ Mihomo 已强制停止"
+        else
+            echo "❌ 无法停止 Mihomo"
+            return 1
+        fi
+    fi
+}
+
+mihomo-stop "$@"

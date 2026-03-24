@@ -1,0 +1,45 @@
+#autoload
+source "${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}/mihomo-common.zsh"
+
+proxy-select() {
+    local country="$1"
+    if [[ -z "$country" ]]; then
+        _mihomo_show_usage
+        return 1
+    fi
+    if ! _mihomo_ensure_running; then return 1; fi
+
+    if [[ "$country" == "auto" ]]; then
+        _mihomo_switch_to_auto
+        return $?
+    fi
+
+    if ! _mihomo_validate_country "$country"; then
+        echo "❌ 无效的国家代码: $country"
+        echo "支持的国家代码:"
+        _mihomo_list_countries
+        return 1
+    fi
+
+    local nodes_str=$(_mihomo_get_nodes_by_country "$country")
+    local nodes=(${(f)nodes_str})
+
+    if [[ ${#nodes[@]} -gt 1 ]]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🌍 ${MIHOMO_COUNTRY_NAMES[$country]} 可用节点"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        local i=1
+        for node in "${nodes[@]}"; do
+            echo "  [$i] $node"
+            ((i++))
+        done
+        echo ""
+        local best_node=$(_mihomo_select_best_node "${nodes[@]}")
+        echo "🎯 自动选择最佳节点: $best_node"
+        _mihomo_do_switch "$best_node"
+    else
+        _mihomo_do_switch "${nodes[1]}"
+    fi
+}
+
+proxy-select "$@"

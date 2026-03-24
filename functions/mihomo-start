@@ -1,0 +1,37 @@
+#autoload
+source "${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}/mihomo-common.zsh"
+
+mihomo-start() {
+    if pgrep -u "$USER" -x "mihomo" > /dev/null; then
+        echo "ℹ️  Mihomo 已在运行"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📊 进程信息"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        pgrep -u "$USER" -a mihomo
+        # 自动启用代理
+        [[ -z "$http_proxy" ]] && proxy-on
+        return 0
+    fi
+
+    echo "🚀 启动 Mihomo..."
+    nohup /home/data/fhz/.local/bin/mihomo -d "$HOME/.config/mihomo" > "$MIHOMO_LOG" 2>&1 &
+    sleep 2
+
+    if pgrep -u "$USER" -x "mihomo" > /dev/null; then
+        echo "✅ Mihomo 启动成功"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📊 进程信息"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        pgrep -u "$USER" -a mihomo
+        echo ""
+        echo "📋 日志: $MIHOMO_LOG"
+        echo "🌐 代理端口: 7899"
+        # 自动启用代理
+        proxy-on
+    else
+        echo "❌ Mihomo 启动失败，请检查日志: $MIHOMO_LOG"
+        return 1
+    fi
+}
+
+mihomo-start "$@"

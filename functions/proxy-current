@@ -1,0 +1,38 @@
+#autoload
+source "${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}/mihomo-common.zsh"
+
+proxy-current() {
+    if ! _mihomo_ensure_running; then return 1; fi
+
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "📊 当前代理状态"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    local group_status=$(_mihomo_api_get_group_status "$MIHOMO_AUTO_GROUP")
+    if [[ -z "$group_status" ]]; then
+        echo "❌ 无法获取代理状态"
+        return 1
+    fi
+
+    local current_node=$(echo "$group_status" | jq -r '.now // "未知"' 2>/dev/null)
+    local group_type=$(echo "$group_status" | jq -r '.type // "未知"' 2>/dev/null)
+
+    echo "  代理组: $MIHOMO_AUTO_GROUP ($group_type)"
+    echo "  当前节点: $current_node"
+
+    local delay=$(_mihomo_api_get_proxy_delay "$current_node")
+    if [[ -n "$delay" && "$delay" != "0" ]]; then
+        echo "  延迟: ${delay}ms"
+    fi
+
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "💡 快捷命令"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  切换节点: proxy-select <国家代码>"
+    echo "  自动模式: proxy-auto"
+    echo "  查看节点: proxy-list"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
+proxy-current "$@"

@@ -1,0 +1,9 @@
+#autoload
+source "${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}/mihomo-common.zsh"
+
+proxy-auto() {
+    if ! _mihomo_ensure_running; then return 1; fi
+    _mihomo_switch_to_auto
+}
+
+proxy-auto "$@"
