@@ -5,7 +5,8 @@
 MIHOMO_API_BASE="${MIHOMO_API_BASE:-http://127.0.0.1:9090}"
 MIHOMO_CONFIG="${MIHOMO_CONFIG:-$HOME/.config/mihomo/config.yaml}"
 MIHOMO_LOG="${MIHOMO_LOG:-$HOME/.mihomo.log}"
-MIHOMO_AUTO_GROUP="${MIHOMO_AUTO_GROUP:-Auto | PandaFan.sh}"
+MIHOMO_AUTO_GROUP="${MIHOMO_AUTO_GROUP:-Auto}"
+MIHOMO_PROXY_PORT="${MIHOMO_PROXY_PORT:-7899}"
 MIHOMO_FUNCTIONS_DIR="${MIHOMO_FUNCTIONS_DIR:-$HOME/.config/zsh/functions/mihomo}"
 
 # ==================== 依赖加载 ====================

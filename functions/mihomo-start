@@ -14,7 +14,7 @@ mihomo-start() {
     fi
 
     echo "🚀 启动 Mihomo..."
-    nohup /home/data/fhz/.local/bin/mihomo -d "$HOME/.config/mihomo" > "$MIHOMO_LOG" 2>&1 &
+    nohup "$HOME/.local/bin/mihomo" -d "$HOME/.config/mihomo" > "$MIHOMO_LOG" 2>&1 &
     sleep 2
 
     if pgrep -u "$USER" -x "mihomo" > /dev/null; then
@@ -25,7 +25,7 @@ mihomo-start() {
         pgrep -u "$USER" -a mihomo
         echo ""
         echo "📋 日志: $MIHOMO_LOG"
-        echo "🌐 代理端口: 7899"
+        echo "🌐 代理端口: ${MIHOMO_PROXY_PORT:-7899}"
         # 自动启用代理
         proxy-on
     else
